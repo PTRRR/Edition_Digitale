@@ -178,6 +178,8 @@
 
 		isScrolling = true;
 
+		console.log(currentFrame);
+
 	}
 
 	//Animate
