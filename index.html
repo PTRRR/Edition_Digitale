@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Edition Digitale</title>
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="author" href="humans.txt">
+
+    </head>
+    <body>
+
+		<div id="wrapper">
+
+            <div id="loading-screen" class = "transform-transition-05s">
+
+                <div id="loading-bar">
+                    <div id="progress-bar" class = "all-transition-05s"></div>
+                </div>
+
+                <div id="text">
+                    
+                    <h1>Le Canal Transhelvétique</h1>
+        
+                    <p>Le canal traverse le plateau Suisse entre Yverdon-Les-Bains et St-Sulpice. Il fait partie d’un ensemble de canaux permettant de relier par voie navigable le Rhin et le Rhone. Ainsi, il relie la Mer du Nord à la Méditerranée et évite l’insécurité et la longueur du voyage par voie maritime. Les dangers multiples, les taxes élevées et la longueur du trajet ont motivé les Hollandais à financer et inicier ce projet qui permettait de rejoindre la Méditerranée plus rapidement. Dernier chainon manquant au réseau, le canal Transhelvétique permet de relier le lac de Neuchâtel au Lac Léman et constitue un intérêt stratégique et économique majeur.</p>
+
+                </div>
+
+                <div id="map">
+                    <img src="img/map2.svg">
+                </div>
+
+                <div id="scroll-indicator" class = "opacity-transition-1s">
+                    
+                    <h3>Scroll</h3>
+
+                </div>
+            
+            </div>
+
+            <div id="overlays" class = "center">
+                
+                <h2 class = "overlay-item opacity-transition-05s center" frames = "0-500">First</h2>
+                <h2 class = "overlay-item opacity-transition-05s center" frames = "600-1000">Second</h2>
+    
+            </div>
+
+            <div id="side-bar">
+
+                <div class="progress-indicator">
+                    
+                    <div class="bar"></div>
+
+                </div>
+
+                <div class="interactive-map transform-transition-05s">
+
+                    <img src="img/map3.svg">
+                    <div class="background-bar"></div>
+
+                </div>
+
+            </div>
+			
+			<video id="main-video" autoplay class = "center" muted = "true" tabindex="0" autobuffer="autobuffer" preload="preload">
+                <source type="video/mp4;" src="videos/MAIN_2.mp4"></source>
+			    <p>Sorry, your browser does not support the &lt;video&gt; element.</p>
+			</video>
+
+		</div>
+
+        <script src="js/app.js"></script>
+    </body>
+</html>
