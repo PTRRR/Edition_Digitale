@@ -49,8 +49,7 @@ html, body{
 	width: 100vw;
 	height: 100vh;
 
-	background: blue;
-
+	background-color: rgba(70, 70, 240, 1);
 }
 
 #loading-screen #loading-bar{
@@ -78,7 +77,7 @@ html, body{
 #text{
 
 	width: 70%;
-	margin: 0 auto;
+	margin-left: 20px;
 
 }
 
@@ -103,7 +102,93 @@ html, body{
 #map{
 
 	width: 100%;
+	position: relative;
 
+}
+
+#map img{
+
+	z-index: 6;
+	position: absolute;
+	width: 100%;
+	left: 0;
+	top: 0;
+
+}
+
+#map .progress-indicator{
+
+	position: absolute;
+	border: solid rgba(70, 70, 240, 1);
+	top: 0;
+	left: 0;
+	background: white;
+	z-index: 5;
+	width: 100%;
+	height: 100%;
+
+}
+
+*,
+:after,
+:before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.scroll-down {
+	opacity: 0;
+  	position: absolute;
+  	bottom: 30px;
+  	left: 50%;
+  	margin-left: -16px;
+  	display: block;
+  	width: 32px;
+  	height: 32px;
+  	border: 0px solid #FFF;
+  	background-size: 14px auto;
+  	border-radius: 50%;
+  	z-index: 2;
+  	-webkit-animation: bounce 2s infinite 2s;
+  	animation: bounce 2s infinite 2s;
+  	-webkit-transition: all .2s ease-in;
+  	transition: all .2s ease-in;
+}
+
+.scroll-down:before {
+    position: absolute;
+    top: calc(50% - 8px);
+    left: calc(50% - 6px);
+    transform: rotate(-45deg);
+    display: block;
+    width: 12px;
+    height: 12px;
+    content: ""; 
+    border: 2px solid white;
+    border-width: 0px 0 2px 2px;
+}
+
+@keyframes bounce {
+  	0%,
+  	100%,
+  	20%,
+  	50%,
+  	80% {
+  	  -webkit-transform: translateY(0);
+  	  -ms-transform: translateY(0);
+  	  transform: translateY(0);
+  	}
+  	40% {
+  	  -webkit-transform: translateY(-10px);
+  	  -ms-transform: translateY(-10px);
+  	  transform: translateY(-10px);
+  	}
+  	60% {
+  	  -webkit-transform: translateY(-5px);
+  	  -ms-transform: translateY(-5px);
+  	  transform: translateY(-5px);
+  	}
 }
 
 #scroll-indicator{
@@ -177,7 +262,7 @@ html, body{
 
 	height: 100vh;
 
-	background: lightgray;
+	background: rgba(70, 70, 240, 1);
 
     -webkit-transform: translate3d(100%, 0, 0);
 	-moz-transform: translate3d(100%, 0, 0);

@@ -1,4 +1,4 @@
-(function(){
+window.onload = function(){
 
 	// add event cross browser
 
@@ -52,7 +52,7 @@
 
 	var loadingScreen = document.querySelector('#loading-screen');
 	var loadingBar = loadingScreen.querySelector('#loading-bar');
-	var progressBar = loadingBar.querySelector('#progress-bar');
+	var progressBar = loadingBar.querySelector('#map .progress-indicator');
 
 	var setHeight = document.querySelector('#set-height');
 	var video = document.querySelector('#main-video');
@@ -75,6 +75,16 @@
 	});
 
 	var overlayTimer = null;
+
+	var initialMap = document.querySelector('#map img');
+	if(initialMap.complete){
+		transformInitialMap();
+	}else{
+		document.querySelector('#map img').onload = function(){
+			transformInitialMap();
+		}
+	}
+
 	//Animation variables
 
 	var isScrolling = false;
@@ -85,35 +95,40 @@
 	var currentFrame = 0;
 	var videoPlayBackIncrementMultiplier = 0.0002;
 
-	transformSideBar();
-	transformVideo();
+	var url = "videos/MAIN_3.mp4";
 
-	video.playbackRate = 10;
+	var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.responseType = "arraybuffer";
 
-	addEvent(video, 'progress', function() {
+    xhr.onload = function(oEvent) {
 
-	    if(!isLoaded){
-	    	var loadedPercentage = video.buffered.end(0) / video.duration;
-	    	progressBar.style.width = (loadedPercentage * 100) + "%"
-	    }
+        var blob = new Blob([oEvent.target.response], {type: "video/mp4"});
 
-	    //Fully loaded
+        video.src = URL.createObjectURL(blob);
+        
+		addEvent(video, 'loadedmetadata', function(){
 
-	    if(loadedPercentage == 1 && !isLoaded){
+			transformSideBar();
+			transformVideo();
+			fullyLoaded();
 
-	    	video.pause();
-	    	video.currentTime = 0;
-	    	video.style.opacity = 1;
-	    	animate();
-	    	isLoaded = true;
-	    	transformVideo();
-	    	loadingScreen.style.pointerEvent = "none";
-	    	document.querySelector('#scroll-indicator').style.opacity = 1;
-	    	frameCount = video.duration * frameRate;
+			document.querySelector('.scroll-down').style.opacity = 1;
 
-	    }
+		});
 
-	});
+    };
+
+    xhr.onprogress = function(oEvent){
+
+      	if(oEvent.lengthComputable) {
+        	var percentComplete = oEvent.loaded/oEvent.total;
+        	document.querySelector('#map .progress-indicator').style.width = map_range(percentComplete, 0, 1, 5, 96) + "%";
+        	
+       	}
+    }
+
+    xhr.send();
 
 	//Bind the wheel events (cross-browser)
 
@@ -178,7 +193,7 @@
 
 		isScrolling = true;
 
-		console.log(currentFrame);
+		document.querySelector('#frame').innerHTML = currentFrame;
 
 	}
 
@@ -186,13 +201,15 @@
 
 	function updateCurrentFrame(){
 		
-  		video.currentTime = currentTime;
+  		if(currentTime) video.currentTime = currentTime;
 
 	}
 
 	function animate(){
 
 		updateCurrentFrame();
+
+		// requestAnimationFrame(animate);
 
 		setTimeout(function(){
 
@@ -219,6 +236,22 @@
 
 		}
 
+		document.querySelectorAll('.overlay-item').forEach(function(item){
+			item.style.width = video.offsetWidth;
+			item.style.height = video.offsetHeight;
+		});
+
+	}
+
+	function transformInitialMap(){
+
+		var initialMap = document.querySelector('#map');
+		var img = initialMap.querySelector('img');
+		var progressBar = initialMap.querySelector('.progress-indicator');
+
+		initialMap.style.height = img.offsetHeight + "px";
+		progressBar.style.height = (img.offsetHeight - 2) + "px";
+
 	}
 
 	function transformSideBar(){
@@ -232,14 +265,32 @@
 
 	}
 
+	function fullyLoaded(){
+
+		video.currentTime = 0;
+	    video.style.opacity = 1;
+	    animate();
+	    isLoaded = true;
+	    transformVideo();
+	    loadingScreen.style.pointerEvent = "none";
+	    frameCount = video.duration * frameRate;
+	    console.log(video.duration);
+
+	}
+
 	window.onresize = function(){
 
 		transformVideo();
 		transformSideBar();
+		transformInitialMap();
 
 	}
 
-})();
+};
+
+function map_range(value, low1, high1, low2, high2) {
+    return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+}
 
 //Prototypes utilities
 
@@ -254,3 +305,12 @@ Array.prototype.clamp = function(callback){
 		callback(this[i], i);
 	}
 }
+
+//Scroll animation
+
+$(function() {
+    $('.scroll-down').click (function() {
+      	$('html, body').animate({scrollTop: $('section.ok').offset().top }, 'slow');
+     	return false;
+    });
+});

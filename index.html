@@ -4,9 +4,10 @@
         <meta charset="utf-8">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Edition Digitale</title>
+        <title>Le Canal Transhelvétique</title>
         <link rel="stylesheet" href="css/style.css">
         <link rel="author" href="humans.txt">
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 
     </head>
     <body>
@@ -29,19 +30,22 @@
 
                 <div id="map">
                     <img src="img/map2.svg">
+                    <div class="progress-indicator"></div>
                 </div>
 
-                <div id="scroll-indicator" class = "opacity-transition-1s">
-                    
-                    <h3>Scroll</h3>
-
-                </div>
+                <section>
+                       <a href="#" class="scroll-down opacity-transition-05s" address="true"></a>
+                </section>
             
             </div>
 
             <div id="overlays" class = "center">
                 
-                <img class = "overlay-item opacity-transition-05s center" frames = "1429-1600" src="img/frame0125.png">
+                <!-- <img class = "overlay-item opacity-transition-05s center" frames = "1429-1600" src="img/frame0125.png"> -->
+                <video loop autoplay class = "overlay-item opacity-transition-05s center" frames = "0-2791">
+                    <source src="videos/output.webm" type="video/webm">
+                    Your browser does not support the video tag.
+                </video>
 <!--                 <h2 class = "overlay-item opacity-transition-05s center" frames = "0-500">First</h2>
                 <h2 class = "overlay-item opacity-transition-05s center" frames = "600-1000">Second</h2> -->
     
@@ -64,12 +68,12 @@
 
             </div>
 			
-			<video id="main-video" autoplay class = "center" muted = "true" tabindex="0" autobuffer="autobuffer" preload="preload">
-                <source type="video/mp4;" src="videos/MAIN_2.mp4"></source>
-			    <p>Sorry, your browser does not support the &lt;video&gt; element.</p>
-			</video>
+
+            <video id="main-video" class = "center"></video>
 
 		</div>
+
+        <h4 id="frame">0</h4>
 
         <script src="js/app.js"></script>
     </body>
