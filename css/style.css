@@ -29,6 +29,15 @@ html, body{
 
 }
 
+#frame{
+	position: fixed;
+	z-index: 100;
+	color: red;
+	font-size: 30px;
+	top: 10px;
+	left: 10px
+}
+
 #wrapper{
 
 	position: relative;
@@ -252,8 +261,6 @@ html, body{
 }
 
 #side-bar .interactive-map{
-
-
 
 	position: fixed;
 

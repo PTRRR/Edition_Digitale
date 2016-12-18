@@ -76,11 +76,22 @@ window.onload = function(){
 
 	var overlayTimer = null;
 
+	//Make sure it's loaded before applying changes
+
+	var sideBarImg = document.querySelector('#side-bar img');
+	if(sideBarImg.complete){
+		transformSideBar();
+	}else{
+		sideBarImg.onload = function(){
+			transformSideBar();
+		}
+	}
+
 	var initialMap = document.querySelector('#map img');
 	if(initialMap.complete){
 		transformInitialMap();
 	}else{
-		document.querySelector('#map img').onload = function(){
+		initialMap.onload = function(){
 			transformInitialMap();
 		}
 	}
@@ -274,7 +285,6 @@ window.onload = function(){
 	    transformVideo();
 	    loadingScreen.style.pointerEvent = "none";
 	    frameCount = video.duration * frameRate;
-	    console.log(video.duration);
 
 	}
 
