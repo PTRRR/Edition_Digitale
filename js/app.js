@@ -58,9 +58,12 @@ window.onload = function(){
 	var video = document.querySelector('#main-video');
 
 	//Overlays items
+	var overlayIsLoading = false;
+	var overlayContainer = document.querySelector('#overlays');
 	var overlays = document.querySelectorAll('.overlay-item');
+	var overlayList = [];
 
-	overlays.forEach(function(item){
+	overlays.forEach(function(item, index){
 
 		var frames = item.getAttribute("frames").split("-");
 		var begin = 0;
@@ -70,9 +73,18 @@ window.onload = function(){
 			frames[index] = parseInt(val);
 		});
 
-		item.displayRange = frames;
+		var newOverlay = {
+
+			src: item.src,
+			displayRange: frames,
+
+		}
+
+		overlayList.push(newOverlay);
 
 	});
+
+	removeAllOverlays();
 
 	var overlayTimer = null;
 
@@ -101,6 +113,7 @@ window.onload = function(){
 	var isScrolling = false;
 	var isStopped = true;
 	var lastTime = 0;
+	var lastFrame = 0;
 	var isLoaded = false;
 	var frameRate = 25;
 	var frameCount = 0;
@@ -194,6 +207,18 @@ window.onload = function(){
 
 		}
 
+		if(currentFrame >= frameCount - 10){
+
+			document.querySelector('#colophon').style.transform = "translate3d(0, 0, 0)";
+			document.querySelector('#colophon').style.opacity = 1;
+
+		}else if(currentFrame < frameCount - 10){
+
+			document.querySelector('#colophon').style.transform = "translate3d(0, 100%, 0)";
+			document.querySelector('#colophon').style.opacity = 0;
+
+		}
+
 		isScrolling = true;
 
 	}
@@ -206,10 +231,31 @@ window.onload = function(){
 
 		overlayTimer = setTimeout(function(){
 
-			overlays.forEach(function(item){
+			overlayList.forEach(function(item){
 
-				if(currentFrame >= item.displayRange[0] && currentFrame <= item.displayRange[1]){
-					item.style.opacity = 1;
+				if(currentFrame >= item.displayRange[0] && currentFrame < item.displayRange[1]){
+
+					//Erase all overlays before loading one new
+
+					overlayIsLoading = true;
+
+					removeAllOverlays();
+
+					loadOverlay(item, function(src){
+
+						var newOverlay = createOverlay(src);
+
+						(function(newOverlay){
+
+							setTimeout(function(){
+								newOverlay.style.opacity = 1;
+								overlayIsLoading = false;
+							}, 20);
+
+						})(newOverlay);
+
+					});
+
 				}
 
 			});
@@ -223,7 +269,11 @@ window.onload = function(){
 	function updateCurrentFrame(){
 		
   		if(typeof targetTime !== 'undefined') {
-  			video.currentTime += (targetTime - video.currentTime) * 0.1; //Interpolate currentTime
+
+  			//Avoid double load
+  			if(!overlayIsLoading) video.currentTime += (targetTime - video.currentTime) * 0.1; //Interpolate currentTime
+  			else targetTime = video.currentTime;
+
   			currentFrame = Math.floor(video.currentTime * frameRate);
   			document.querySelector('#frame').innerHTML = "frame: " + currentFrame;
   		}
@@ -234,18 +284,18 @@ window.onload = function(){
 
 		updateCurrentFrame();
 
-		if(video.currentTime != lastTime){
+		if(currentFrame != lastFrame){
 			
 			isScrolling = true;
 
 			var barOffset = 190;
 			document.querySelector('.background-bar').style.height = ((currentFrame + barOffset) / (frameCount + barOffset * 2) * 100) + "%";
 
-			launchOverlayTimer();
-
-			overlays.forEach(function(item){
+			document.querySelectorAll('.overlay-item').forEach(function(item){
 				item.style.opacity = 0;
 			});
+
+			launchOverlayTimer();
 
 		}else{
 			
@@ -254,6 +304,7 @@ window.onload = function(){
 		}
 
 		lastTime = video.currentTime;
+		lastFrame = currentFrame;
 
 		// requestAnimationFrame(animate); --> lag.... je sais pas pourquoi.... :(
 
@@ -285,6 +336,47 @@ window.onload = function(){
 		document.querySelectorAll('.overlay-item').forEach(function(item){
 			item.style.width = video.offsetWidth;
 			item.style.height = video.offsetHeight;
+		});
+
+	}
+
+	function loadOverlay(overlay, callback){
+
+		var url = overlay.src;
+
+		var xhr = new XMLHttpRequest();
+	    xhr.open("GET", url, true);
+	    xhr.responseType = "arraybuffer";
+
+	    xhr.onload = function(oEvent) {
+
+	        var blob = new Blob([oEvent.target.response], {type: "video/webm"});
+	        
+			callback(URL.createObjectURL(blob));
+
+	    };
+
+	    xhr.send();
+
+	}
+
+	function createOverlay(src){
+
+		var newVideo = document.createElement("video");
+		newVideo.src = src;
+		newVideo.className = "overlay-item opacity-transition-05s center";
+		newVideo.setAttribute("autoplay", "true");
+		newVideo.setAttribute("loop", "true");
+		overlayContainer.appendChild(newVideo);
+
+		return newVideo;
+
+	}
+
+	function removeAllOverlays(){
+
+		document.querySelectorAll('.overlay-item').forEach(function(item){
+			overlayContainer.removeChild(item);
 		});
 
 	}

@@ -47,6 +47,43 @@ html, body{
 
 }
 
+#colophon{
+
+	padding-top: 13px;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	opacity: 0;
+	top: 0;
+	left: 0;
+	z-index: 1000;
+	background: rgba(40, 70, 250, 1);
+
+	-webkit-transition: opacity 1.0s ease-in-out, transform 0.5s ease-in-out;
+  	-moz-transition: opacity 1.0s ease-in-out, transform 0.5s ease-in-out;
+  	-ms-transition: opacity 1.0s ease-in-out, transform 0.5s ease-in-out;
+  	-o-transition: opacity 1.0s ease-in-out, transform 0.5s ease-in-out;
+  	transition: opacity 1.0s ease-in-out, transform 0.5s ease-in-out;
+
+  	-webkit-transform: translate3d(0, 100%, 0);
+	-moz-transform: translate3d(0, 100%, 0);
+	-ms-transform: translate3d(0, 100%, 0);
+	-o-transform: translate3d(0, 100%, 0);
+	transform: translate3d(0, 100%, 0);
+
+}
+
+#colophon a{
+
+	font-family: 'GTPressura';
+	color: white;
+	font-size: 2.9vh;
+	line-height: 3.8vh;
+
+	text-decoration: none;
+
+}
+
 #loading-screen{
 
 	opacity: 1;
@@ -91,14 +128,15 @@ html, body{
 
 }
 
-#text{
+.text{
 
 	width: 70%;
+	/*margin-top: 20px;*/
 	margin-left: 20px;
 
 }
 
-#text h1{
+.text h1{
 
 	font-family: 'GTPressura';
 	color: white;
@@ -107,7 +145,7 @@ html, body{
 
 }
 
-#text p{
+.text p{
 
 	font-family: 'GTPressura';
 	color: white;
@@ -412,8 +450,7 @@ html, body{
 #overlays .overlay-item{
 	
 	opacity: 0;
-
-	border: solid;
+	/*display: none;*/
 /*	width: 100%;
 	height: 100%;*/
 
