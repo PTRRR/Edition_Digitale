@@ -99,14 +99,18 @@ window.onload = function(){
 	//Animation variables
 
 	var isScrolling = false;
+	var isStopped = true;
+	var lastTime = 0;
 	var isLoaded = false;
 	var frameRate = 25;
 	var frameCount = 0;
+	var duration = 0;
 	var currentTime = 0;
 	var currentFrame = 0;
+	var targetTime = 0;
 	var videoPlayBackIncrementMultiplier = 0.0002;
 
-	var url = "videos/MAIN_3.mp4";
+	var url = "videos/MAIN.mp4";
 
 	var xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
@@ -120,11 +124,14 @@ window.onload = function(){
         
 		addEvent(video, 'loadedmetadata', function(){
 
+			duration = video.duration;
+
 			transformSideBar();
 			transformVideo();
 			fullyLoaded();
 
 			document.querySelector('.scroll-down').style.opacity = 1;
+			document.querySelector('.chargement').style.opacity = 0;
 
 		});
 
@@ -133,13 +140,25 @@ window.onload = function(){
     xhr.onprogress = function(oEvent){
 
       	if(oEvent.lengthComputable) {
+
         	var percentComplete = oEvent.loaded/oEvent.total;
         	document.querySelector('#map .progress-indicator').style.width = map_range(percentComplete, 0, 1, 5, 96) + "%";
-        	
+        	document.querySelector('.chargement').innerHTML = Math.floor(percentComplete * 100) + "%";
+
        	}
     }
 
     xhr.send();
+
+    //Click event
+
+    addEvent(document.querySelector('.interactive-map'), 'click', function(e){
+
+    	var percentHeight = e.clientY / window.innerHeight;
+
+    	targetTime = percentHeight * duration;
+    	
+    });
 
 	//Bind the wheel events (cross-browser)
 
@@ -155,30 +174,33 @@ window.onload = function(){
 		var deltaY = e.wheelDeltaY || -e.detailY;
 
 		//Check for NaN values
-
 		
 		if(deltaY === deltaY && isLoaded){
 
-			currentTime -= deltaY * videoPlayBackIncrementMultiplier;
-			currentTime = currentTime.clamp(0, video.duration);
+			targetTime -= deltaY * videoPlayBackIncrementMultiplier;
+			targetTime = targetTime.clamp(0, video.duration);
 
 		}
-
-		currentFrame = Math.floor(currentTime * frameRate);
 
 		if(currentFrame == 0){
 
 			loadingScreen.style.transform = "translate3d(0, 0, 0)";
+			loadingScreen.style.opacity = 1;
 
 		}else{
 
 			loadingScreen.style.transform = "translate3d(0, -100%, 0)";
+			loadingScreen.style.opacity = 0;
 
 		}
 
-		var barOffset = 190;
-		document.querySelector('.background-bar').style.height = ((currentFrame + barOffset) / (frameCount + barOffset * 2) * 100) + "%";
-		document.querySelector('.bar').style.height = (currentFrame / frameCount * 100) + "%";
+		isScrolling = true;
+
+	}
+
+	//Animate
+
+	function launchOverlayTimer(){
 
 		window.clearTimeout(overlayTimer);
 
@@ -194,25 +216,17 @@ window.onload = function(){
 
 			isScrolling = false;
 
-		}, 300);
-
-		if(!isScrolling){
-			overlays.forEach(function(item){
-				item.style.opacity = 0;
-			});
-		}
-
-		isScrolling = true;
-
-		document.querySelector('#frame').innerHTML = currentFrame;
+		}, 600);
 
 	}
 
-	//Animate
-
 	function updateCurrentFrame(){
 		
-  		if(currentTime) video.currentTime = currentTime;
+  		if(typeof targetTime !== 'undefined') {
+  			video.currentTime += (targetTime - video.currentTime) * 0.1; //Interpolate currentTime
+  			currentFrame = Math.floor(video.currentTime * frameRate);
+  			document.querySelector('#frame').innerHTML = "frame: " + currentFrame;
+  		}
 
 	}
 
@@ -220,13 +234,34 @@ window.onload = function(){
 
 		updateCurrentFrame();
 
-		// requestAnimationFrame(animate);
+		if(video.currentTime != lastTime){
+			
+			isScrolling = true;
 
-		setTimeout(function(){
+			var barOffset = 190;
+			document.querySelector('.background-bar').style.height = ((currentFrame + barOffset) / (frameCount + barOffset * 2) * 100) + "%";
+
+			launchOverlayTimer();
+
+			overlays.forEach(function(item){
+				item.style.opacity = 0;
+			});
+
+		}else{
+			
+			isScrolling = false;
+
+		}
+
+		lastTime = video.currentTime;
+
+		// requestAnimationFrame(animate); --> lag.... je sais pas pourquoi.... :(
+
+		setTimeout(function(){ //Hacky method... but works
 
 			animate();
 
-		}, 50);
+		}, 40);
 
 	}
 
@@ -270,9 +305,11 @@ window.onload = function(){
 		var interactiveMap = document.querySelector('.interactive-map');
 		var backgroundBar = interactiveMap.querySelector('.background-bar');
 		var map = interactiveMap.querySelector('img');
+		var shadow = interactiveMap.querySelector('.shadow');
 
 		interactiveMap.style.width = map.width + 'px';
 		backgroundBar.style.width = map.width + 'px';
+		shadow.style.width = map.width + 'px';
 
 	}
 
@@ -310,7 +347,7 @@ Number.prototype.clamp = function(min, max) {
 
 };
 
-Array.prototype.clamp = function(callback){
+Array.prototype.forEach = function(callback){
 	for(var i = 0; i < this.length; i++){
 		callback(this[i], i);
 	}
