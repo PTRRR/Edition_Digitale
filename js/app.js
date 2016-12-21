@@ -50,6 +50,7 @@ window.onload = function(){
 
 	//DomElements
 
+	var loaded = false;
 	var loadingScreen = document.querySelector('#loading-screen');
 	var loadingBar = loadingScreen.querySelector('#loading-bar');
 	var progressBar = loadingBar.querySelector('#map .progress-indicator');
@@ -207,16 +208,18 @@ window.onload = function(){
 
 		}
 
-		if(currentFrame >= frameCount - 10){
+		if(isLoaded){
+			if(currentFrame >= frameCount - 10){
 
-			document.querySelector('#colophon').style.transform = "translate3d(0, 0, 0)";
-			document.querySelector('#colophon').style.opacity = 1;
+				document.querySelector('#colophon').style.transform = "translate3d(0, 0, 0)";
+				document.querySelector('#colophon').style.opacity = 1;
 
-		}else if(currentFrame < frameCount - 10){
+			}else if(currentFrame < frameCount - 10){
 
-			document.querySelector('#colophon').style.transform = "translate3d(0, 100%, 0)";
-			document.querySelector('#colophon').style.opacity = 0;
+				document.querySelector('#colophon').style.transform = "translate3d(0, 100%, 0)";
+				document.querySelector('#colophon').style.opacity = 0;
 
+			}
 		}
 
 		isScrolling = true;
@@ -231,6 +234,8 @@ window.onload = function(){
 
 		overlayTimer = setTimeout(function(){
 
+			removeAllOverlays();
+
 			overlayList.forEach(function(item){
 
 				if(currentFrame >= item.displayRange[0] && currentFrame < item.displayRange[1]){
@@ -239,20 +244,24 @@ window.onload = function(){
 
 					overlayIsLoading = true;
 
-					removeAllOverlays();
-
 					loadOverlay(item, function(src){
 
 						var newOverlay = createOverlay(src);
 
-						(function(newOverlay){
+						addEvent(newOverlay, 'loadedmetadata', function(){
 
-							setTimeout(function(){
-								newOverlay.style.opacity = 1;
-								overlayIsLoading = false;
-							}, 20);
+							//whait to Fade in
+							(function(vid){
 
-						})(newOverlay);
+								setTimeout(function(){
+									vid.style.opacity = 1;
+								}, 20);
+								
+							})(this);
+							
+							overlayIsLoading = false;
+
+						});
 
 					});
 
@@ -262,7 +271,7 @@ window.onload = function(){
 
 			isScrolling = false;
 
-		}, 600);
+		}, 300);
 
 	}
 
